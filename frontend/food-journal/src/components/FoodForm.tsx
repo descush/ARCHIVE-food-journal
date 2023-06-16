@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { FoodContext } from "./FoodContext";
+import FoodContext from "../Context/FoodContext";
 
 const FoodForm = () => {
   const { addFood } = useContext(FoodContext);
@@ -16,6 +16,7 @@ const FoodForm = () => {
       ...prevSubmission,
       [name]: value
     }));
+    console.log("Handle Input")
   };
 
   const handleSubmit = (event: React.FormEvent) => {
@@ -27,6 +28,7 @@ const FoodForm = () => {
       fat: "",
       carbs: ""
     });
+    console.log("Handle Submission")
   };
 
   return (
