@@ -1,20 +1,24 @@
-import FoodForm from "../FoodForm";
-import { Route, Routes } from "react-router-dom";
+import { FoodForm } from "../FoodForm";
+import { Link, Route, Routes } from "react-router-dom";
 import { Login } from "../Login/Login";
+import { DailyTargets } from "../DailyTargets/DailyTargets";
 
 export function Home() {
 
 
 
-    return(
+    return (
         <div>
             <Routes>
-                    <Route path="/foodform" element={<FoodForm />} />
-                    <Route path="/login" element={<Login />} />
+                <Route path="/add-entry" element={<FoodForm />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/daily-targets" element={<DailyTargets />} />
             </Routes>
-             <div>
+            <div>
                 {/* stuff */}
-             </div>
+                <Link to="/add-entry">Add Entry</Link>
+                <Link to="/daily-targets">Daily Targets</Link>
+            </div>
         </div>
     )
 }
