@@ -1,8 +1,13 @@
 export interface FoodEntry {
-  protein: string;
-  veggies: string;
-  fat: string;
-  carbs: string;
+  _id?: string;
+  proteinAmount: number;
+  proteinType: string;
+  veggiesAmount: number;
+  veggiesType: string;
+  fatsAmount: number;
+  fatsType: string;
+  carbsAmount: number;
+  carbsType: string;
 }
 
 export interface FoodEntries {
