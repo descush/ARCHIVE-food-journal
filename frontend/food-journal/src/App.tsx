@@ -3,6 +3,7 @@ import { getFood } from "./services/FoodService";
 import FoodForm from "./components/FoodForm";
 import { FoodContext } from "./components/FoodContext";
 import { FoodEntry, FoodEntries } from "./interface/FoodEntry";
+import { Header } from "./components/header/Header";
 
 
 
@@ -31,6 +32,7 @@ function App() {
 
   return (
     <div className="App">
+      <Header />
       <FoodContext.Provider value={{ addFood }}>
         <FoodForm />
       </FoodContext.Provider>
