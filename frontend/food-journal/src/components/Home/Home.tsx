@@ -6,6 +6,7 @@ import Entry from "../../../../../backend/src/models/Entry"
 
 interface HomeProps {
     entries: Entry[]; // Add entries prop
+
   }
   
   export function Home(props: HomeProps) {
@@ -15,11 +16,8 @@ interface HomeProps {
   
     return (
       <div>
-        <Routes>
-          <Route path="/add-entry" element={<FoodForm />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/daily-targets" element={<DailyTargets />} />
-        </Routes>
+         <Link to="/add-entry">Add Entry</Link>
+                <Link to="/daily-targets">Daily Targets</Link>
         <div>
           {/* Add entries rendering */}
           {entries.length > 0 ? (
