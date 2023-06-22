@@ -6,6 +6,7 @@ import axios from "axios";
 export function FoodForm() {
   const { addFood } = useContext(FoodContext);
 
+  // State for form inputs
   const [proteinAmount, setProteinAmount] = useState(0);
   const [proteinType, setProteinType] = useState("");
   const [veggiesAmount, setVeggiesAmount] = useState(0);
@@ -15,10 +16,11 @@ export function FoodForm() {
   const [carbsAmount, setCarbsAmount] = useState(0);
   const [carbsType, setCarbsType] = useState("");
 
+  // Form submission handler
   async function onSubmit(e: any) {
     e.preventDefault();
 
-
+    // Create new entry object
     const newEntry: FoodEntry = {
       proteinAmount,
       proteinType,
@@ -30,19 +32,17 @@ export function FoodForm() {
       carbsType,
     };
 
-    
-
     try {
+      // Send POST request to create a new entry
       const response = await axios.post("http://localhost:3000/entries", newEntry);
       const createdEntry: FoodEntry = response.data;
+      
+      // Add the created entry to the context
       addFood(createdEntry);
     } catch (error) {
       console.error("Error creating entry:", error);
-
     }
-  
   };
-
 
   return (
     <form onSubmit={e => onSubmit(e)}>
