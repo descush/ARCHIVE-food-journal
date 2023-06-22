@@ -49,15 +49,33 @@ const errorResponse = (error: any, res: any) => {
   });
 
     // create one
-    entryRouter.post('/entries', async (req, res) => {
-      try {
-        const newEntry = req.body as Entry;
-        const client = await getClient();
-        const result = await client.db().collection<Entry>('entries').insertOne(newEntry);
-        console.log(result);
-        res.status(201).json(newEntry);
-      } catch (err) {
-        console.error("Error creating entry:", err);
+entryRouter.post('/entries', async (req, res) => {
+  try {
+    const newEntry = req.body as Entry;
+    const client = await getClient();
+    const result = await client
+      .db()
+      .collection<Entry>('entries')
+      .insertOne(newEntry);
+
+    if (result.acknowledged && result.insertedId) {
+      const insertedId = result.insertedId;
+      const insertedEntry = await client
+        .db()
+        .collection<Entry>('entries')
+        .findOne({ _id: insertedId });
+
+      if (insertedEntry) {
+        console.log(insertedEntry);
+        res.status(201).json(insertedEntry);
+      } else {
         res.status(500).json({ message: "Failed to create entry" });
       }
-    });
+    } else {
+      res.status(500).json({ message: "Failed to create entry" });
+    }
+  } catch (err) {
+    console.error("Error creating entry:", err);
+    res.status(500).json({ message: "Failed to create entry" });
+  }
+});
