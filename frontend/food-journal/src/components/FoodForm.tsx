@@ -1,37 +1,47 @@
 import React, { useContext, useState } from "react";
 import FoodContext from "../Context/FoodContext";
 import { FoodEntry } from "../interface/FoodEntry";
+import axios from "axios";
 
 export function FoodForm() {
   const { addFood } = useContext(FoodContext);
 
   const [proteinAmount, setProteinAmount] = useState(0);
-  const [proteinType, setProteinType] = useState('');
+  const [proteinType, setProteinType] = useState("");
   const [veggiesAmount, setVeggiesAmount] = useState(0);
-  const [veggiesType, setVeggiesType] = useState('');
+  const [veggiesType, setVeggiesType] = useState("");
   const [fatsAmount, setFatsAmount] = useState(0);
-  const [fatsType, setFatsType] = useState('');
+  const [fatsType, setFatsType] = useState("");
   const [carbsAmount, setCarbsAmount] = useState(0);
-  const [carbsType, setCarbsType] = useState('');
+  const [carbsType, setCarbsType] = useState("");
 
-
-  function onSubmit(e: any) {
+  async function onSubmit(e: any) {
     e.preventDefault();
 
-    const newSubmission = {
-      proteinAmount: proteinAmount,
-      proteinType: proteinType,
-      veggiesAmount: veggiesAmount,
-      veggiesType: veggiesType,
-      fatsAmount: fatsAmount,
-      fatsType: fatsType,
-      carbsAmount: carbsAmount,
-      carbsType: carbsType
-    }
 
-    // addSubmission(newSubmission).then(data => addFood(data))
-    addFood(newSubmission);
-  }
+    const newEntry: FoodEntry = {
+      proteinAmount,
+      proteinType,
+      veggiesAmount,
+      veggiesType,
+      fatsAmount,
+      fatsType,
+      carbsAmount,
+      carbsType,
+    };
+
+    
+
+    try {
+      const response = await axios.post("http://localhost:3000/entries", newEntry);
+      const createdEntry: FoodEntry = response.data;
+      addFood(createdEntry);
+    } catch (error) {
+      console.error("Error creating entry:", error);
+
+    }
+  
+  };
 
 
   return (
