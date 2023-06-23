@@ -7,12 +7,17 @@ interface Props {
 }
 
 export function FoodContextProvider({ children }: Props) {
-  const [entry, setEntry] = useState<FoodEntry[]>([]); // State to store the food entries
+  const [foodEntry, setFoodEntry] = useState<FoodEntry[]>([]); // State to store the food entries
+
+  // Function to add a new food entry to the state
+  function addFood(food: FoodEntry) {
+    setFoodEntry((prevFoodEntry) => [...prevFoodEntry, food]);
+  }
 
   return (
     <FoodContext.Provider value={{
-      foodEntry: [], // Set the foodEntry value to an empty array
-      addFood: (food: FoodEntry) => { setEntry([...entry, food]) } // Function to add a new food entry to the state
+      foodEntry,
+      addFood
     }}>
       {children} {/* Render the children components */}
     </FoodContext.Provider>

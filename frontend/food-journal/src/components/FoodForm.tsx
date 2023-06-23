@@ -1,60 +1,105 @@
 import React, { useContext, useState } from "react";
 import FoodContext from "../Context/FoodContext";
 import { FoodEntry } from "../interface/FoodEntry";
-import axios from "axios";
+import { getFood } from "../services/FoodService";
 
 export function FoodForm() {
   const { addFood } = useContext(FoodContext);
 
   // State for form inputs
-  const [proteinAmount, setProteinAmount] = useState(0);
-  const [proteinType, setProteinType] = useState("");
-  const [veggiesAmount, setVeggiesAmount] = useState(0);
-  const [veggiesType, setVeggiesType] = useState("");
-  const [fatsAmount, setFatsAmount] = useState(0);
-  const [fatsType, setFatsType] = useState("");
-  const [carbsAmount, setCarbsAmount] = useState(0);
-  const [carbsType, setCarbsType] = useState("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<FoodEntry[]>([]);
 
   // Form submission handler
-  async function onSubmit(e: any) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    // Create new entry object
-    const newEntry: FoodEntry = {
-      proteinAmount,
-      proteinType,
-      veggiesAmount,
-      veggiesType,
-      fatsAmount,
-      fatsType,
-      carbsAmount,
-      carbsType,
-    };
-
     try {
-      // Send POST request to create a new entry
-      const response = await axios.post("http://localhost:3000/entries", newEntry);
-      const createdEntry: FoodEntry = response.data;
-      
-      // Add the created entry to the context
-      addFood(createdEntry);
+      console.log("Submitting form with search query:", searchQuery);
+
+      const response = await getFood(searchQuery);
+      console.log("API response:", response);
+
+      if (Array.isArray(response)) {
+        setSearchResults(response);
+      } else {
+        setSearchResults([]);
+      }
     } catch (error) {
-      console.error("Error creating entry:", error);
+      console.error("Error fetching food data:", error);
     }
-  };
+  }
+
+  // Function to add a selected food entry to the context
+  function addSelectedFood(selectedFood: FoodEntry) {
+    addFood(selectedFood);
+    setSearchResults([]); // Clear the search results after adding the selected food
+  }
+
+  // Function to handle serving amount change
+  function handleServingAmountChange(food: FoodEntry, servingAmount: number) {
+    console.log(`Food ${food.description} serving amount changed to:`, servingAmount);
+  }
+
+  // Function to handle serving type change
+  function handleServingTypeChange(food: FoodEntry, servingType: string) {
+    console.log(`Food ${food.description} serving type changed to:`, servingType);
+  }
 
   return (
-    <form onSubmit={e => onSubmit(e)}>
-      <input value={proteinAmount} onChange={(e => setProteinAmount(+e.target.value))} type="number" placeholder="Protein Amount"></input>
-      <input value={proteinType} onChange={(e => setProteinType(e.target.value))} type="text" placeholder="Protein Type"></input>
-      <input value={veggiesAmount} onChange={(e => setVeggiesAmount(+e.target.value))} type="number" placeholder="Veg Amount"></input>
-      <input value={veggiesType} onChange={(e => setVeggiesType(e.target.value))} type="text" placeholder="Veg Type"></input>
-      <input value={fatsAmount} onChange={(e => setFatsAmount(+e.target.value))} type="number" placeholder="Fats Amount"></input>
-      <input value={fatsType} onChange={(e => setFatsType(e.target.value))} type="text" placeholder="Fats Type"></input>
-      <input value={carbsAmount} onChange={(e => setCarbsAmount(+e.target.value))} type="number" placeholder="Carbs Amount"></input>
-      <input value={carbsType} onChange={(e => setCarbsType(e.target.value))} type="text" placeholder="Carbs Type"></input>
-      <button>Add Entry</button>
-    </form>
+    <div>
+      <form onSubmit={onSubmit}>
+        <input
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          type="text"
+          placeholder="Search for food..."
+        />
+        <button type="submit">Search</button>
+      </form>
+      {/* Display search results */}
+      {searchResults.length > 0 ? (
+        <div>
+          <h2>Search Results</h2>
+          <ul>
+            {searchResults.map((food: FoodEntry) => (
+              <li key={food.fdcId}>
+                <h3>{food.description}</h3>
+                {food.foodNutrients?.map((nutrient) => (
+                  <p key={nutrient.nutrientId}>
+                    {nutrient.nutrientName}: {nutrient.value} {nutrient.unitName}
+                  </p>
+                ))}
+                <div>
+                  <label>Serving Amount:</label>
+                  <input
+                    type="number"
+                    value={food.servingAmount}
+                    onChange={(e) =>
+                      handleServingAmountChange(food, parseInt(e.target.value))
+                    }
+                  />
+                  <label>Serving Type:</label>
+                  <select
+                    value={food.servingType}
+                    onChange={(e) => handleServingTypeChange(food, e.target.value)}
+                  >
+                    <option value="Palm">Palm</option>
+                    <option value="Fist">Fist</option>
+                    <option value="Thumb">Thumb</option>
+                    <option value="Cupped Handfuls">Cupped Handfuls</option>
+                  </select>
+                </div>
+                <button onClick={() => addSelectedFood(food)}>Add to Entries</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <p>No results found.</p>
+      )}
+      {/* Rest of the form inputs */}
+      {/* ... */}
+    </div>
   );
-};
+}

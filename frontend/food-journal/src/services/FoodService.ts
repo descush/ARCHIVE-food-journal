@@ -1,11 +1,15 @@
 import axios from "axios";
 import { FoodEntry } from "../interface/FoodEntry";
 
-// Function to retrieve food data from an API
-export function getFood(): any {
-  return axios.get('https://api.nal.usda.gov/fdc/v1/foods/search?api_key=UGxFWbRbmPW0QfYnbAmGna4tH017KBN6NasEtfMu')
-    .then(response => response.data);
-}
+// Function to retrieve food data from the USDA API
+export function getFood(searchQuery: string): Promise<any> {
+    const apiKey = "UGxFWbRbmPW0QfYnbAmGna4tH017KBN6NasEtfMu";
+    const url = `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${apiKey}&query=${searchQuery}`;
+    return axios.get(url).then((response) => {
+      const foodResults: FoodEntry[] = response.data.foods; // Assuming the food entries are present in the `foods` property of the API response
+      return foodResults;
+    });
+  }
 
 // Function to retrieve all entries from the server
 export function getAllEntries() {
